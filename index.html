@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>Naiwa Motion Lab</title>
+  <meta name="description" content="Naiwa Motion Lab：浏览器里的动作迁移 + 软体模拟。Motion transfer and soft-body simulation in the browser.">
+  <meta property="og:title" content="Naiwa Motion Lab">
+  <meta property="og:description" content="Motion transfer + soft-body simulation in the browser · 浏览器里的动作迁移 + 软体模拟">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14130f" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    // Language and theme before the first paint: ?lang=en / ?theme=dark, else what the visitor picked last.
+    (function () {
+      var q = new URLSearchParams(location.search), d = document.documentElement, get = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
+      var lang = q.get("lang") || get("nml-lang");
+      if (lang === "en" || lang === "zh") { d.dataset.lang = lang; d.lang = lang === "en" ? "en" : "zh-CN"; }
+      var theme = q.get("theme") || get("nml-theme");
+      if (theme === "light" || theme === "dark") d.dataset.theme = theme;
+    })();
+  </script>
+  <script src="assets/main.js" defer></script>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>Naiwa Motion Lab</a>
+    <nav class="bar-links" aria-label="sections">
+      <a href="#gallery"><span lang="zh-CN">示例</span><span lang="en">Gallery</span></a>
+      <a href="#lab"><span lang="zh-CN">实验室</span><span lang="en">Lab</span></a>
+      <a href="#use"><span lang="zh-CN">使用</span><span lang="en">Use</span></a>
+      <a href="#license"><span lang="zh-CN">协议</span><span lang="en">License</span></a>
+    </nav>
+    <div class="bar-tools">
+      <button class="chip" id="lang-btn" type="button" aria-label="Switch language / 切换语言"><span lang="zh-CN">EN</span><span lang="en">中文</span></button>
+      <button class="chip icon" id="theme-btn" type="button" aria-label="Theme / 主题">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9c0-.5 0-.9-.1-1.4A5.5 5.5 0 0 1 13.4 3.1 9 9 0 0 0 12 3z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <p class="eyebrow"><span lang="zh-CN">浏览器里的数值实验</span><span lang="en">A numerical lab in the browser</span></p>
+    <h1>Naiwa Motion Lab</h1>
+    <p class="pitch">
+      <span lang="zh-CN">把人的动作迁移到奶蛙身上：骨骼外面是一层软肉，在浏览器里实时做物理模拟。</span>
+      <span lang="en">Motion transfer onto 奶蛙 (Naiwa), simulated as soft flesh over a skeleton, live in the browser.</span>
+    </p>
+    <div class="actions">
+      <a class="btn primary" href="./demo/"><span lang="zh-CN">在线体验</span><span lang="en">Live demo</span></a>
+      <a class="btn" href="https://github.com/ZhiqiLi-CG/naiwa-motion-lab"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.5 15.6c.4 0 .5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.3 1.9.9 2.4.7 0-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-4 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.5 7.5 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.1 0 3.1-1.9 3.7-3.6 3.9.3.3.5.8.5 1.5v2.2c0 .2.1.5.6.4A8 8 0 0 0 8 0z"/></svg><span lang="zh-CN">代码</span><span lang="en">Code</span></a>
+      <a class="btn" href="#use"><span lang="zh-CN">使用说明</span><span lang="en">How to use</span></a>
+    </div>
+    <figure class="hero-media" id="hero">
+      <!-- filled from clips/index.json by assets/main.js -->
+      <div class="placeholder ratio"><span lang="zh-CN">主视频待生成（clips/ 为空）</span><span lang="en">Hero clip pending (clips/ is empty)</span></div>
+    </figure>
+    <p class="note center"><span lang="zh-CN">全部计算在你的浏览器里完成，摄像头画面和视频不会上传。</span><span lang="en">Everything runs in your browser; camera frames and videos never leave your computer.</span></p>
+  </section>
+
+  <section class="wrap" id="what">
+    <h2><span lang="zh-CN">它做什么</span><span lang="en">What it does</span></h2>
+    <ol class="pipeline">
+      <li>
+        <h3><span lang="zh-CN">动作来源</span><span lang="en">Motion sources</span></h3>
+        <p><span lang="zh-CN">摄像头、上传的视频，或 14 支预设动作（5 支从真实视频里提取，9 支程序生成）。MediaPipe 在本地估计人体姿态；上传的视频先整段分析，自动修正镜头运动和切镜。</span>
+        <span lang="en">Your webcam, an uploaded video, or one of 14 preset motions (5 captured from real videos, 9 procedural). MediaPipe estimates the pose locally; uploaded videos are analysed in full first, with camera motion and cuts corrected.</span></p>
+      </li>
+      <li>
+        <h3><span lang="zh-CN">动作迁移</span><span lang="en">Retargeting</span></h3>
+        <p><span lang="zh-CN">人的四肢方向搬到奶蛙短得多的骨骼上：滤波 → 目标 → 求解（IK 或带约束优化）→ 约束（四肢不进身体、关节限制）→ 脚踩实地面。</span>
+        <span lang="en">The person's limb directions mapped onto the frog's much shorter skeleton: filter → goal → solver (IK or constrained optimisation) → constraints (limbs outside the body, joint limits) → planted feet.</span></p>
+      </li>
+      <li>
+        <h3><span lang="zh-CN">骨骼上的软体</span><span lang="en">Soft body over a skeleton</span></h3>
+        <p><span lang="zh-CN">刚性骨骼作边界条件，外面是超弹性的软肉，双向耦合、动量守恒。可以戳、拖、拍、扔，看凹陷、晃动和衰减；材质可按身体部位分别设置。</span>
+        <span lang="en">Rigid bones as boundary conditions, hyperelastic flesh around them, coupled both ways with momentum conserved. Poke, drag, slap or throw it and watch the dents, the jiggle and its decay; the material can be set per body region.</span></p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="wrap" id="gallery">
+    <h2><span lang="zh-CN">示例</span><span lang="en">Gallery</span></h2>
+    <p class="lead"><span lang="zh-CN">页面里实际录下的片段，未做后期。</span><span lang="en">Clips recorded from the page itself, no post-processing.</span></p>
+    <div class="grid" id="gallery-grid">
+      <!-- filled from clips/index.json by assets/main.js -->
+    </div>
+  </section>
+
+  <section class="wrap" id="lab">
+    <h2><span lang="zh-CN">两个实验室</span><span lang="en">Two labs</span></h2>
+    <p class="lead"><span lang="zh-CN">动作迁移和模拟都是一个小核心循环加可替换的板块。实验室在页面上默认收起，打开后可以换算法、调参数、看读数、改代码。</span>
+      <span lang="en">Motion transfer and simulation are each a small core loop over replaceable blocks. The Lab is collapsed by default; open it to switch algorithms, set parameters, read the metrics and edit the code.</span></p>
+    <div class="cards">
+      <article class="card">
+        <h3><span lang="zh-CN">模拟器 · 9 个</span><span lang="en">Simulators · 9</span></h3>
+        <p class="slots">skeleton · flesh · target · coupling · collision · interaction · output · metrics</p>
+        <ul>
+          <li><b><span lang="zh-CN">CPU 约束求解</span><span lang="en">CPU constraint solver</span></b> <span lang="zh-CN">（默认）：Rapier 软体，PGS 求解，417 个粒子 / 1190 个单元。</span><span lang="en">(default): Rapier soft bodies solved by PGS, 417 particles / 1190 cells.</span></li>
+          <li><b>GPU MPM</b><span lang="zh-CN">：MLS-MPM（neo-Hookean + 粘性）。有 GPU 时用 WebGPU，没有时同一算法改用 Web Worker + SharedArrayBuffer 的 CPU 并行，页面显示当前后端。</span><span lang="en">: MLS-MPM (neo-Hookean with viscosity). WebGPU when there is a GPU, otherwise the same algorithm on Web Workers over SharedArrayBuffer; the page shows which backend runs.</span></li>
+          <li><b><span lang="zh-CN">算法库 7 个</span><span lang="en">7 library algorithms</span></b><span lang="zh-CN">：质点弹簧、PBD、XPBD、形状匹配、Projective Dynamics、隐式 FEM、FEM 加拉索。</span><span lang="en">: mass–spring, PBD, XPBD, shape matching, Projective Dynamics, implicit FEM, FEM with tethers.</span></li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3><span lang="zh-CN">动作迁移 · 8 种</span><span lang="en">Retargeters · 8</span></h3>
+        <p class="slots">filter · goal · solver · constraints · output</p>
+        <ul>
+          <li><b><span lang="zh-CN">默认</span><span lang="en">Default</span></b><span lang="zh-CN">：方向拷贝 + 身体约束 + 脚踩地。</span><span lang="en">: direction copy + body constraints + planted feet.</span></li>
+          <li><b><span lang="zh-CN">滤波</span><span lang="en">Filters</span></b><span lang="zh-CN">：Kalman（视频用 RTS 平滑）、Savitzky–Golay。</span><span lang="en">: Kalman (RTS smoothing for videos), Savitzky–Golay.</span></li>
+          <li><b><span lang="zh-CN">求解</span><span lang="en">Solvers</span></b><span lang="zh-CN">：CCD、FABRIK、阻尼最小二乘、罚函数 Gauss–Newton 约束优化。</span><span lang="en">: CCD, FABRIK, damped least squares, penalty Gauss–Newton constrained optimisation.</span></li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3><span lang="zh-CN">代码实验室</span><span lang="en">Code lab</span></h3>
+        <p><span lang="zh-CN">按板块查看源码，复制一份自己改，Ctrl+S 后在正在运行的模拟里热替换，出错自动回退；可以和内置板块对比指标。</span>
+          <span lang="en">Read any block's source, copy it, edit, press Ctrl+S to hot-swap it into the running simulation (it rolls back on errors), and compare it with the built-in block.</span></p>
+      </article>
+      <article class="card">
+        <h3><span lang="zh-CN">学习页</span><span lang="en">Learning pages</span></h3>
+        <p><span lang="zh-CN">每个算法一页简短的中英文说明，在代码旁边显示，附同一套测量下的对比表。</span>
+          <span lang="en">One short page per algorithm in Chinese and English, shown next to its code, with comparison tables from one shared benchmark.</span></p>
+        <p class="links"><a href="https://github.com/ZhiqiLi-CG/naiwa-motion-lab/blob/main/docs/learn/sim-index.md"><span lang="zh-CN">模拟算法对比</span><span lang="en">Simulation algorithms</span></a> · <a href="https://github.com/ZhiqiLi-CG/naiwa-motion-lab/blob/main/docs/learn/motion-index.md"><span lang="zh-CN">动作迁移算法对比</span><span lang="en">Motion-transfer algorithms</span></a></p>
+      </article>
+    </div>
+
+    <h3 class="sub"><span lang="zh-CN">实测</span><span lang="en">Measured</span></h3>
+    <dl class="stats">
+      <div><dt>2.6 ms</dt><dd><span lang="zh-CN">GPU MPM 每步（WebGPU，AMD Radeon 880M 核显）</span><span lang="en">GPU MPM per step (WebGPU, AMD Radeon 880M iGPU)</span></dd></div>
+      <div><dt>0.9–3.1 ms</dt><dd><span lang="zh-CN">算法库模拟器每步（Chrome，同一台笔记本），均在 4 ms 物理预算内</span><span lang="en">a library simulator's step in Chrome on the same laptop, all within the 4 ms physics budget</span></dd></div>
+      <div><dt>1.9–2.1 cm</dt><dd><span lang="zh-CN">弯腰 50° 时 PD / FEM 的肉相对骨骼目标的平均偏差（内置 3.5 cm）</span><span lang="en">flesh deviation from its bone-carried target for PD / FEM in a 50° bend (built-in 3.5 cm)</span></dd></div>
+      <div><dt>5.5–8.5</dt><dd><span lang="zh-CN">急停后 FEM / PD 肚子的摆动次数，持续 0.8–1.7 s（BDF2 积分）</span><span lang="en">swings of the belly after a sudden stop for FEM / PD, lasting 0.8–1.7 s (BDF2 integration)</span></dd></div>
+      <div><dt>&lt; 1 ms</dt><dd><span lang="zh-CN">每种动作迁移求解每帧的耗时</span><span lang="en">per frame for every retargeting solver</span></dd></div>
+      <div><dt>117 → 0 cm/s</dt><dd><span lang="zh-CN">狗熊哆嗦毛的脚滑：方向拷贝 → 加上脚踩地</span><span lang="en">foot slide on 狗熊哆嗦毛: direction copy → with planted feet</span></dd></div>
+    </dl>
+    <p class="note"><span lang="zh-CN">数字来自代码仓库里的基准测试（<code>src/algorithms/*/bench.ts</code>）和学习页的对比表；已知问题见</span><span lang="en">Numbers from the repository's benchmarks (<code>src/algorithms/*/bench.ts</code>) and the learning pages' tables; known issues are listed in the</span> <a href="https://github.com/ZhiqiLi-CG/naiwa-motion-lab/blob/main/docs/RELEASE-NOTES.md"><span lang="zh-CN">发布说明</span><span lang="en">release notes</span></a>.</p>
+  </section>
+
+  <section class="wrap" id="use">
+    <h2><span lang="zh-CN">使用说明</span><span lang="en">How to use</span></h2>
+    <ol class="steps">
+      <li><span lang="zh-CN">打开<a href="./demo/">在线体验</a>，奶蛙站在荷叶上。用鼠标或手指戳它、拖它、拍它、扔它。</span><span lang="en">Open the <a href="./demo/">live demo</a>; the frog stands on a lily pad. Poke, drag, slap or throw it with the mouse or a finger.</span></li>
+      <li><span lang="zh-CN">在“动作”里选预设舞蹈、打开摄像头，或上传一段视频，奶蛙会跟着动。</span><span lang="en">Under Motion, pick a preset dance, turn on the camera or upload a video; the frog follows.</span></li>
+      <li><span lang="zh-CN">“手感”里换材质（果冻、麻薯、气球、布丁、橡皮）、调软硬和晃动时间，或打开慢动作、月球重力。</span><span lang="en">Under Feel, switch materials (jelly, mochi, balloon, pudding, rubber), set softness and how long it wobbles, or turn on slow motion and moon gravity.</span></li>
+      <li><span lang="zh-CN">打开“实验室”换模拟器和动作迁移算法、看读数、编辑代码。</span><span lang="en">Open the Lab to switch simulators and retargeters, read the metrics and edit the code.</span></li>
+    </ol>
+    <p class="note"><span lang="zh-CN">完整的使用说明在页面里：点右上角的 <kbd>?</kbd> 按钮，或按 <kbd>?</kbd> 键。</span><span lang="en">The full guide is inside the app: press the <kbd>?</kbd> button at the top right, or the <kbd>?</kbd> key.</span></p>
+    <div class="grid small" id="help-grid" hidden>
+      <!-- tutorial clips from demo/help/clips.json (written by scripts/build-demo.mjs) -->
+    </div>
+  </section>
+
+  <section class="wrap" id="install">
+    <h2><span lang="zh-CN">本地安装和运行</span><span lang="en">Install and run locally</span></h2>
+    <p class="lead"><span lang="zh-CN">需要 Node.js 18.19 以上（一键脚本会在缺少时安装）。本地运行还能用“本机 Lab”：检测到已登录的 Codex CLI 时，页面上出现“与 Codex 对话”和“用 Codex 优化”。</span>
+      <span lang="en">Needs Node.js 18.19 or newer (the one-click scripts install it when missing). Running locally also enables the local Lab: with a logged-in Codex CLI the page offers “Chat with Codex” and “Optimise with Codex”.</span></p>
+    <div class="cols">
+      <div>
+        <h3>Windows</h3>
+        <pre><code>git clone https://github.com/ZhiqiLi-CG/naiwa-motion-lab.git
+cd naiwa-motion-lab
+install.cmd
+start.cmd</code></pre>
+        <p class="note"><span lang="zh-CN">也可以直接双击 <code>install.cmd</code>、<code>start.cmd</code>。</span><span lang="en">Or double-click <code>install.cmd</code> and <code>start.cmd</code>.</span></p>
+      </div>
+      <div>
+        <h3>Linux / macOS</h3>
+        <pre><code>git clone https://github.com/ZhiqiLi-CG/naiwa-motion-lab.git
+cd naiwa-motion-lab
+./install.sh
+./start.sh</code></pre>
+        <p class="note"><span lang="zh-CN">不需要 sudo；缺少 Node.js 时用 nvm 装到用户目录。</span><span lang="en">No sudo; a missing Node.js is installed into your home with nvm.</span></p>
+      </div>
+    </div>
+    <p class="note"><span lang="zh-CN">手动：</span><span lang="en">By hand:</span> <code>npm ci</code> → <code>npx vite</code> → http://localhost:5180/ · <span lang="zh-CN">选项</span><span lang="en">options</span>: <code>start --no-lab --no-open --port N --host --prod</code></p>
+  </section>
+
+  <section class="wrap" id="license">
+    <h2><span lang="zh-CN">协议</span><span lang="en">License</span></h2>
+    <ul class="plain">
+      <li><span lang="zh-CN">代码和文档：<a href="https://github.com/ZhiqiLi-CG/naiwa-motion-lab/blob/main/LICENSE">Apache License 2.0</a>。第三方软件和数据各有协议，见</span><span lang="en">Code and documentation: <a href="https://github.com/ZhiqiLi-CG/naiwa-motion-lab/blob/main/LICENSE">Apache License 2.0</a>. Third-party software and data keep their own licenses; see</span> <a href="https://github.com/ZhiqiLi-CG/naiwa-motion-lab/blob/main/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a>.</li>
+      <li class="warn"><span lang="zh-CN"><b>奶蛙角色不在协议之内。</b>奶蛙形象及表现它的文件（模型、参考图，以及本页的视频片段）来自第三方的知识产权，Apache 协议不覆盖它们，我们也不授予任何权利。</span><span lang="en"><b>The 奶蛙 character is not licensed.</b> The character and the files depicting it (the model, the reference images, and the clips on this page) derive from a third party's intellectual property. The Apache License does not cover them and no rights to them are granted.</span></li>
+    </ul>
+  </section>
+
+  <section class="wrap" id="credits">
+    <h2><span lang="zh-CN">致谢</span><span lang="en">Credits</span></h2>
+    <ul class="plain">
+      <li><span lang="zh-CN">“真人 vs 奶蛙”片段里的舞者：</span><span lang="en">The dancer in the person-vs-frog clip:</span> <a href="https://commons.wikimedia.org/wiki/File:Watch_Me_Nae_Nae_-_Tutorial.webm">“Watch Me Nae Nae - Tutorial”</a> by El Martial, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>, via Wikimedia Commons<span lang="zh-CN">（缩放并重新编码）</span><span lang="en"> (scaled and re-encoded)</span>.</li>
+      <li><span lang="zh-CN">预设舞蹈只发布从公开视频里提取的姿态数据，视频本身不包含在内；来源和时间段见</span><span lang="en">The preset dances ship only pose data extracted from public videos, not the videos; sources and time ranges are in</span> <a href="https://github.com/ZhiqiLi-CG/naiwa-motion-lab/blob/main/tools/dances/SOURCES.md">tools/dances/SOURCES.md</a>.</li>
+      <li><span lang="zh-CN">基于</span><span lang="en">Built on</span> three.js, Rapier, MediaPipe Tasks Vision, CodeMirror, Vite; <span lang="zh-CN">本页的跨源隔离由</span><span lang="en">cross-origin isolation on this page by</span> <a href="https://github.com/gzuidhof/coi-serviceworker">coi-serviceworker</a> (MIT).</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <span>Naiwa Motion Lab · ZhiqiLi-CG · 2026</span>
+  <a href="https://github.com/ZhiqiLi-CG/naiwa-motion-lab">GitHub</a>
+</footer>
+
+<template id="clip-tpl">
+  <figure class="clip">
+    <div class="frame"><video muted loop playsinline preload="none"></video></div>
+    <figcaption><b class="t"></b> <span class="c"></span><small class="credit"></small></figcaption>
+  </figure>
+</template>
+</body>
+</html>
