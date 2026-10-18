@@ -167,3 +167,7 @@ pre code { background: none; padding: 0; font-size: 14px; }
 .gallery.small { display: flex; flex-wrap: wrap; justify-content: center; }
 .gallery.small > .media { flex: 0 1 340px; }
 @media (max-width: 720px) { .tabpanel { padding: 16px 16px 8px; } pre { padding: 14px 16px; } }
+
+/* The simulators under the hero line: small, quiet, wrapping at the dots. */
+.algos { max-width: 46em; margin: -16px auto 28px; font-size: 13px; line-height: 1.6; color: var(--muted); text-align: center; opacity: .85; }
+.algos span span { white-space: nowrap; }
