@@ -38,8 +38,8 @@ for (const v of VARIANTS) {
   await sleep(1500);
   const state = () => page.evaluate(() => [...document.querySelectorAll("video")].map((x) => ({ src: x.currentSrc.split("/").pop(), playing: !x.paused && x.readyState >= 2, ready: x.readyState })));
   const atTop = await state();
-  // scroll the gallery into view: its videos should start, the hero should pause
-  await page.evaluate(() => document.getElementById("gallery-grid").scrollIntoView());
+  // scroll to the first cards: their videos should start, the teaser should pause
+  await page.evaluate(() => document.getElementById("play").scrollIntoView({ behavior: "instant" }));
   await sleep(2500);
   const atGallery = await state();
   const horizontal = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

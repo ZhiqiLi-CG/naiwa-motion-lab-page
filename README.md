@@ -12,7 +12,7 @@
 
 | 路径 | 内容 | 是否提交 |
 |---|---|---|
-| `index.html`, `assets/` | 页面本身（中英切换、亮暗主题，不依赖框架） | 是 |
+| `index.html`, `assets/` | 页面本身：首屏、玩法、更多片段、实验室、本地运行（中英切换、亮暗主题，不依赖框架） | 是 |
 | `clips/` | 展示片段：`index.json` 加上每个片段的 `<id>.mp4`（H.264 720p）和 `<id>.jpg`（封面） | **是**（这个仓库就是为它们存在的） |
 | `demo/` | 构建好的应用 | 否（本地或 CI 构建） |
 | `vendor/coi-serviceworker/` | coi-serviceworker 0.1.7（MIT），给 demo 提供跨源隔离 | 是 |
@@ -28,7 +28,7 @@ node scripts/sync-clips.mjs --check         # 只检查 clips/index.json 和文�
 git add clips && git commit -m "clips: ..."
 ```
 
-同步会删除 `clips/` 里清单上已经没有的文件。`clips/` 为空时，页面显示标明“待生成”的占位块。
+同步会删除 `clips/` 里清单上已经没有的文件。页面按 id 把片段放进各个位置（`index.html` 里每个视频框的 `data-prefer`，例如首屏 `teaser,gouxiong,kemusan,…`，“戳一戳”是 `poke-slowmo,slap,throw,…`；清单里加 `"hero": true` 可以指定首屏），没被用到的片段进“更多片段”。没有片段时显示标明“待生成”的占位块。
 
 ### 本地构建和预览
 
@@ -94,7 +94,7 @@ node scripts/sync-clips.mjs --check         # only check clips/index.json agains
 git add clips && git commit -m "clips: ..."
 ```
 
-Syncing removes files the manifest no longer lists. While `clips/` is empty, the page shows clearly marked placeholders.
+Syncing removes files the manifest no longer lists. The page places clips by id (each video box in `index.html` has a `data-prefer` list, e.g. the teaser `teaser,gouxiong,kemusan,…`, "Poke it" `poke-slowmo,slap,throw,…`; `"hero": true` in the manifest picks the teaser); clips no box takes go to "More clips". Missing clips show clearly marked placeholders.
 
 ### Building and previewing locally
 
