@@ -1,0 +1,81 @@
+# Build the project page with the live demo and deploy it to GitHub Pages.
+# Settings → Pages → Source: "GitHub Actions".
+# While ZhiqiLi-CG/naiwa-motion-lab is private, add a repository secret APP_REPO_TOKEN (a fine-grained token with
+# read access to that repository's contents); once it is public no secret is needed.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      app_ref:
+        description: "Branch, tag or commit of naiwa-motion-lab to build the demo from"
+        required: false
+        default: "main"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the page
+        uses: actions/checkout@v4
+        with:
+          path: page
+
+      - name: Check out the app
+        uses: actions/checkout@v4
+        with:
+          repository: ZhiqiLi-CG/naiwa-motion-lab
+          ref: ${{ github.event.inputs.app_ref || 'main' }}
+          path: app
+          # the default token can read the app once it is public
+          token: ${{ secrets.APP_REPO_TOKEN || github.token }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install the app's dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build the demo
+        run: node page/scripts/build-demo.mjs --app app
+
+      - name: Check the committed clips
+        run: node page/scripts/sync-clips.mjs --check
+
+      - name: Assemble the site
+        run: |
+          mkdir _site
+          cp -r page/index.html page/assets page/clips page/demo page/LICENSE page/NOTICE _site/
+          touch _site/.nojekyll
+          du -sh _site _site/demo _site/clips
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
