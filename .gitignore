@@ -1,0 +1,7 @@
+# The live demo is built from the app repo (scripts/build-demo.mjs), locally or in CI; never committed.
+/demo/
+# Screenshots, Vite's cache.
+/.cache/
+node_modules/
+*.log
+# clips/ IS committed: it is what this repository is for.

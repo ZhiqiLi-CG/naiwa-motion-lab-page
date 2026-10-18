@@ -1,0 +1,12 @@
+Naiwa Motion Lab project page
+Copyright 2026 ZhiqiLi-CG
+
+The page's code (index.html, assets/, scripts/, .github/) is licensed under the Apache License, Version 2.0 (see
+LICENSE).
+
+vendor/coi-serviceworker/coi-serviceworker.js is coi-serviceworker 0.1.7 by Guido Zuidhof and contributors, MIT
+(vendor/coi-serviceworker/LICENSE).
+
+The character 奶蛙 (Naiwa) and the files depicting it, including the video clips and posters in clips/ and the demo
+built into demo/, are NOT covered by the Apache License: the character derives from a third party's intellectual
+property and no rights to it are granted. Clips that show a person carry their own credit (clips/index.json).
