@@ -1,1 +1,163 @@
-[]
+[
+  {
+    "id": "dance-gouxiong",
+    "title": {
+      "zh": "狗熊哆嗦毛",
+      "en": "Shaking Bear"
+    },
+    "caption": {
+      "zh": "从真实视频提取的舞蹈迁移到奶蛙身上，骨骼外的软肉随动作晃动。",
+      "en": "A dance captured from a real video, transferred onto 奶蛙; the soft flesh over the skeleton jiggles with it."
+    },
+    "duration": 5.85,
+    "files": {
+      "mp4": "dance-gouxiong.mp4",
+      "poster": "dance-gouxiong.jpg"
+    }
+  },
+  {
+    "id": "dance-naenae",
+    "title": {
+      "zh": "Nae Nae",
+      "en": "Nae Nae"
+    },
+    "caption": {
+      "zh": "Nae Nae：一只手挥起，膝盖跟着节拍弯曲。",
+      "en": "The Nae Nae: one arm waving up, knees bending on the beat."
+    },
+    "duration": 6,
+    "files": {
+      "mp4": "dance-naenae.mp4",
+      "poster": "dance-naenae.jpg"
+    }
+  },
+  {
+    "id": "dance-kemusan",
+    "title": {
+      "zh": "科目三",
+      "en": "Subject Three"
+    },
+    "caption": {
+      "zh": "科目三：甩手、扭胯，肚子的晃动来自模拟而不是动画。",
+      "en": "Subject Three: arm swings and hip sways; the belly's wobble is simulated, not animated."
+    },
+    "duration": 7.367,
+    "files": {
+      "mp4": "dance-kemusan.mp4",
+      "poster": "dance-kemusan.jpg"
+    }
+  },
+  {
+    "id": "poke-slowmo",
+    "title": {
+      "zh": "慢动作戳肚子",
+      "en": "Belly poke in slow motion"
+    },
+    "caption": {
+      "zh": "0.25 倍速，从侧面看：戳下去的凹坑、回弹和肚子的余晃。",
+      "en": "At 0.25× speed, seen from the side: the dent, the rebound and the belly's after-wobble."
+    },
+    "duration": 7,
+    "files": {
+      "mp4": "poke-slowmo.mp4",
+      "poster": "poke-slowmo.jpg"
+    }
+  },
+  {
+    "id": "slap",
+    "title": {
+      "zh": "拍一下",
+      "en": "Slap"
+    },
+    "caption": {
+      "zh": "从侧面拍肚子：整块软肉被推开，又被骨骼拉回来。",
+      "en": "A slap on the belly's side: the flesh is pushed away and pulled back by the skeleton."
+    },
+    "duration": 6.333,
+    "files": {
+      "mp4": "slap.mp4",
+      "poster": "slap.jpg"
+    }
+  },
+  {
+    "id": "throw",
+    "title": {
+      "zh": "抓住、抛起、落地",
+      "en": "Grab, toss, land"
+    },
+    "caption": {
+      "zh": "抓住头顶往上一抛：落地时身体被压扁，再弹回站姿。",
+      "en": "Grabbed by the top of the head and tossed up: it squashes on landing and springs back upright."
+    },
+    "duration": 6.333,
+    "files": {
+      "mp4": "throw.mp4",
+      "poster": "throw.jpg"
+    }
+  },
+  {
+    "id": "materials",
+    "title": {
+      "zh": "果冻 vs 橡皮",
+      "en": "Jelly vs Rubber"
+    },
+    "caption": {
+      "zh": "同一下戳（0.5 倍速），两种材质：果冻软而晃，橡皮硬而快停。",
+      "en": "The same poke (0.5× speed) on two materials: jelly is soft and wobbly, rubber firm and quick to settle."
+    },
+    "duration": 5.167,
+    "files": {
+      "mp4": "materials.mp4",
+      "poster": "materials.jpg"
+    }
+  },
+  {
+    "id": "moon",
+    "title": {
+      "zh": "月球重力",
+      "en": "Moon gravity"
+    },
+    "caption": {
+      "zh": "重力调成地球的 1/6：往上一扔，飘得更高更久，落地更轻。",
+      "en": "Gravity at 1/6 of Earth's: tossed up, it floats higher and longer and lands softly."
+    },
+    "duration": 7.667,
+    "files": {
+      "mp4": "moon.mp4",
+      "poster": "moon.jpg"
+    }
+  },
+  {
+    "id": "person-vs-frog",
+    "title": {
+      "zh": "真人 vs 奶蛙",
+      "en": "Person vs 奶蛙"
+    },
+    "caption": {
+      "zh": "上传一段视频，页面先分析整段，再让奶蛙跟着同步跳。",
+      "en": "An uploaded video is analysed first, then 奶蛙 dances along in sync."
+    },
+    "duration": 7.367,
+    "files": {
+      "mp4": "person-vs-frog.mp4",
+      "poster": "person-vs-frog.jpg"
+    },
+    "credit": "Dancer: \"Watch Me Nae Nae - Tutorial\" by El Martial, CC BY 3.0, via Wikimedia Commons"
+  },
+  {
+    "id": "gpu-mpm",
+    "title": {
+      "zh": "GPU MPM 模拟器",
+      "en": "GPU MPM simulator"
+    },
+    "caption": {
+      "zh": "换成 WebGPU 上的 MLS-MPM 模拟器跳科目三：软肉由粒子-网格法算出。",
+      "en": "The MLS-MPM simulator on WebGPU dancing Subject Three: the flesh computed by the particle–grid method."
+    },
+    "duration": 7.367,
+    "files": {
+      "mp4": "gpu-mpm.mp4",
+      "poster": "gpu-mpm.jpg"
+    }
+  }
+]
