@@ -1,36 +1,56 @@
-// Language and theme toggles; the hero and gallery from clips/index.json; tutorial clips from demo/help/clips.json.
-// Videos load lazily and play only while on screen.
+// Language and theme toggles, install tabs, and the clips: every [data-slot] box takes a clip from clips/index.json by
+// its preferred ids (data-prefer, first unused wins); clips no slot took go to "More clips". Tutorial clips come from
+// demo/help/clips.json. Videos load lazily and play only while on screen.
 (() => {
   const root = document.documentElement;
-  const store = (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode: not remembered */ } };
+  const remember = (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode: not remembered */ } };
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   document.getElementById("lang-btn").addEventListener("click", () => {
     const lang = root.dataset.lang === "en" ? "zh" : "en";
     root.dataset.lang = lang;
     root.lang = lang === "en" ? "en" : "zh-CN";
-    store("nml-lang", lang);
+    remember("nml-lang", lang);
   });
   document.getElementById("theme-btn").addEventListener("click", () => {
     const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
     root.dataset.theme = dark ? "light" : "dark";
-    store("nml-theme", root.dataset.theme);
+    remember("nml-theme", root.dataset.theme);
   });
+
+  // Install tabs; Linux/macOS first for visitors not on Windows.
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  const select = (tab) => {
+    for (const t of tabs) {
+      const on = t === tab;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+    }
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => select(t));
+    t.addEventListener("keydown", (e) => {
+      const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (d) { const n = tabs[(i + d + tabs.length) % tabs.length]; select(n); n.focus(); }
+    });
+  });
+  if (!/win/i.test(navigator.userAgentData?.platform ?? navigator.platform ?? "")) select(document.getElementById("tab-nix"));
 
   /** Both languages as sibling spans; CSS shows one. */
   const bilingual = (el, text) => {
-    el.replaceChildren();
-    if (!text) return;
-    if (typeof text === "string") { el.textContent = text; return; }
+    if (!text) return el;
+    if (typeof text === "string") { el.textContent = text; return el; }
     for (const [lang, key] of [["zh-CN", "zh"], ["en", "en"]]) {
       const s = document.createElement("span");
       s.lang = lang;
       s.textContent = text[key] ?? text.en ?? text.zh ?? "";
       el.append(s);
     }
+    return el;
   };
 
-  // Play what is on screen, pause what is not; the first time a video is seen its file starts loading.
+  // Play what is on screen, pause what is not; a video's file starts loading the first time it comes near.
   const seen = new IntersectionObserver((entries) => {
     for (const e of entries) {
       const v = e.target;
@@ -39,9 +59,9 @@
         if (!reduced) v.play().catch(() => {});
       } else v.pause();
     }
-  }, { threshold: 0.35 });
+  }, { threshold: 0.3 });
 
-  function video(src, poster, { eager = false } = {}) {
+  function video(src, poster, eager) {
     const v = document.createElement("video");
     v.muted = true; v.loop = true; v.playsInline = true;
     v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
@@ -55,63 +75,66 @@
     return v;
   }
 
-  function clipFigure(c, base) {
-    const fig = document.getElementById("clip-tpl").content.firstElementChild.cloneNode(true);
-    fig.querySelector("video").replaceWith(video(base + c.files.mp4, c.files.poster ? base + c.files.poster : null));
-    bilingual(fig.querySelector(".t"), c.title);
-    bilingual(fig.querySelector(".c"), c.caption);
-    bilingual(fig.querySelector(".credit"), c.credit);
-    if (c.duration) fig.querySelector("video").title = `${c.duration.toFixed(1)} s`;
-    return fig;
+  function fill(box, clip, base, eager) {
+    box.replaceChildren(video(base + clip.files.mp4, clip.files.poster ? base + clip.files.poster : null, eager));
+    if (clip.credit) box.append(bilingual(Object.assign(document.createElement("small"), { className: "credit" }), clip.credit));
   }
 
-  function placeholders(grid, n) {
-    for (let i = 0; i < n; i++) {
-      const fig = document.createElement("figure");
-      fig.className = "clip placeholder-clip";
-      fig.innerHTML = `<div class="frame"><div class="placeholder"><span lang="zh-CN">示例片段待生成</span><span lang="en">Clip pending</span></div></div>
-        <figcaption><b><span lang="zh-CN">占位</span><span lang="en">Placeholder</span></b> <span lang="zh-CN">运行 scripts/sync-clips.mjs 后这里显示真实片段。</span><span lang="en">Real clips appear here after scripts/sync-clips.mjs.</span></figcaption>`;
-      grid.append(fig);
-    }
+  function placeholder(box) {
+    const p = document.createElement("div");
+    p.className = "placeholder";
+    p.innerHTML = '<span lang="zh-CN">视频待生成</span><span lang="en">Clip pending</span>';
+    box.replaceChildren(p);
   }
-
-  const HERO_PREFERENCE = ["person-vs-frog", "materials", "poke-slowmo"];
 
   fetch("clips/index.json", { cache: "no-cache" })
     .then((r) => (r.ok ? r.json() : []))
     .catch(() => [])
     .then((list) => {
-      const clips = Array.isArray(list) ? list.filter((c) => c?.files?.mp4) : [];
+      const clips = Array.isArray(list) ? list.filter((c) => c?.id && c.files?.mp4) : [];
+      const byId = new Map(clips.map((c) => [c.id, c]));
+      const used = new Set();
+      let hero = null;
+      for (const box of document.querySelectorAll("[data-slot]")) {
+        const prefer = box.dataset.prefer.split(",");
+        const flagged = box.dataset.slot === "hero" ? clips.find((c) => c.hero) : null;
+        // first unused preferred clip; else a preferred one again (never the teaser); else a placeholder
+        const clip = flagged ?? prefer.map((id) => byId.get(id)).find((c) => c && !used.has(c.id))
+          ?? prefer.map((id) => byId.get(id)).find((c) => c && c !== hero)
+          ?? (box.dataset.slot === "hero" ? clips[0] : null);
+        if (!clip) { placeholder(box); continue; }
+        if (box.dataset.slot === "hero") hero = clip;
+        used.add(clip.id);
+        fill(box, clip, "clips/", box.dataset.slot === "hero");
+      }
+      const rest = clips.filter((c) => !used.has(c.id));
       const grid = document.getElementById("gallery-grid");
-      if (!clips.length) return placeholders(grid, 6);
-      const hero = clips.find((c) => c.hero) ?? HERO_PREFERENCE.map((id) => clips.find((c) => c.id === id)).find(Boolean) ?? clips[0];
-      const heroFig = document.getElementById("hero");
-      const hv = video("clips/" + hero.files.mp4, hero.files.poster ? "clips/" + hero.files.poster : null, { eager: true });
-      hv.autoplay = !reduced;
-      const cap = document.createElement("figcaption");
-      bilingual(cap, hero.caption);
-      if (hero.credit) { const s = document.createElement("small"); s.textContent = ` · ${hero.credit}`; cap.append(s); }
-      heroFig.replaceChildren(hv, cap);
-      for (const c of clips) if (c !== hero) grid.append(clipFigure(c, "clips/"));
-      if (clips.length === 1) placeholders(grid, 1);
+      for (const c of rest) {
+        const fig = document.createElement("figure");
+        const box = document.createElement("div");
+        box.className = "media";
+        fill(box, c, "clips/", false);
+        const cap = document.createElement("figcaption");
+        cap.append(bilingual(document.createElement("b"), c.title), bilingual(document.createElement("span"), c.caption));
+        fig.append(box, cap);
+        grid.append(fig);
+      }
+      document.getElementById("more").hidden = rest.length === 0;
     });
 
-  // Tutorial clips ship with the app (public/help/); the demo build lists them.
+  // Tutorial clips ship with the app (public/help/); scripts/build-demo.mjs lists them.
   fetch("demo/help/clips.json", { cache: "no-cache" })
     .then((r) => (r.ok ? r.json() : []))
     .catch(() => [])
     .then((list) => {
-      const grid = document.getElementById("help-grid");
       const clips = (Array.isArray(list) ? list : []).filter((c) => c.mp4).slice(0, 4);
+      const grid = document.getElementById("help-grid");
       for (const c of clips) {
-        const fig = document.createElement("figure");
-        fig.className = "clip";
-        const frame = document.createElement("div");
-        frame.className = "frame";
-        frame.append(video("demo/help/" + c.mp4, c.poster ? "demo/help/" + c.poster : null));
-        fig.append(frame);
-        grid.append(fig);
+        const box = document.createElement("div");
+        box.className = "media";
+        box.append(video("demo/help/" + c.mp4, c.poster ? "demo/help/" + c.poster : null, false));
+        grid.append(box);
       }
-      grid.hidden = clips.length === 0;
+      document.getElementById("help").hidden = clips.length === 0;
     });
 })();
